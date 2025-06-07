@@ -5,3 +5,4 @@ authors = ["gzordrai <40698142+gzordrai@users.noreply.github.com>"]
 edition = "2021"
 
 [dependencies]
+macroquad = "0.4.14"
