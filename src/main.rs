@@ -1,14 +1,19 @@
 use macroquad::prelude::*;
+use once_cell::sync::Lazy;
 
-use crate::boids::Boids;
+use crate::{boids::Boids, config::config::Config};
 
 mod boid;
 mod boids;
+mod config;
+
+pub static CONFIG: Lazy<Config> = Lazy::new(|| Config::new("config.toml"));
 
 fn window_conf() -> Conf {
     Conf {
-        window_title: "Boids simulation".to_owned(),
-        fullscreen: false,
+        window_title: CONFIG.window_title.clone(),
+        window_height: CONFIG.window_height,
+        window_width: CONFIG.window_width,
         ..Default::default()
     }
 }
