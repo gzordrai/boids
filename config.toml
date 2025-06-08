@@ -1,3 +1,16 @@
+[window]
 window_title = "Boids Simulation"
-window_height = 600
-window_width = 800
+window_height = 1920
+window_width = 1080
+
+[boids]
+number = 100
+min_speed = 2.0
+max_speed = 5.0
+max_force = 0.05
+neighborhood_radius = 60.0
+separation_radius = 40.0
+separation_strength = 3.0
+alignment_strength = 1.8
+cohesion_strength = 0.5
+debug = false
