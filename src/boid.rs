@@ -2,10 +2,11 @@ use macroquad::{color::RED, math::Vec2, rand::gen_range, shapes::draw_circle};
 
 use crate::CONFIG;
 
+#[derive(Clone)]
 pub struct Boid {
     position: Vec2,
     velocity: Vec2,
-    radius: f32
+    radius: f32,
 }
 
 impl Boid {
@@ -13,7 +14,7 @@ impl Boid {
         Boid {
             position: Vec2::new(10.0, 10.0),
             velocity: Vec2::new(1.0, 1.0),
-            radius
+            radius,
         }
     }
 
@@ -21,8 +22,9 @@ impl Boid {
         draw_circle(self.position.x, self.position.y, self.radius, RED);
     }
 
-    pub fn update(&mut self) {
+    pub fn update(&mut self, boids: &Vec<Boid>) {
         self.update_position_with_bounds();
+        self.calculate_separation_force(boids);
     }
 
     fn update_position_with_bounds(&mut self) {
@@ -43,5 +45,30 @@ impl Boid {
         }
 
         self.position += self.velocity
+    }
+
+    fn calculate_separation_force(&mut self, boids: &Vec<Boid>) {
+        let mut steer = Vec2::ZERO;
+        let mut count = 0;
+
+        for boid in boids {
+            let diff = self.position - boid.position;
+            let distance = diff.length();
+
+            if distance > 0.0 && distance < self.radius {
+                steer += diff.normalize() / distance;
+                count += 1;
+            }
+        }
+
+        if count > 0 {
+            steer /= count as f32;
+
+            if steer.length() > 0.0 {
+                steer = steer.normalize() * 0.5;
+            }
+
+            self.velocity += steer;
+        }
     }
 }

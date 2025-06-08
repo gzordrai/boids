@@ -1,5 +1,6 @@
 use crate::boid::Boid;
 
+#[derive(Clone)]
 pub struct Boids {
     boids: Vec<Boid>,
 }
@@ -22,8 +23,10 @@ impl Boids {
     }
 
     pub fn update(&mut self) {
+        let boids_snapshot = self.boids.clone();
+
         for boid in &mut self.boids {
-            boid.update();
+            boid.update(&boids_snapshot);
         }
     }
 }
