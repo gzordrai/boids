@@ -11,9 +11,15 @@ pub struct Boid {
 
 impl Boid {
     pub fn new(radius: f32) -> Self {
+        let width = CONFIG.window_width as f32;
+        let height = CONFIG.window_height as f32;
+
         Boid {
-            position: Vec2::new(10.0, 10.0),
-            velocity: Vec2::new(1.0, 1.0),
+            position: Vec2::new(
+                gen_range(radius, width - radius),
+                gen_range(radius, height - radius),
+            ),
+            velocity: Vec2::new(gen_range(-2.0, 2.0), gen_range(-2.0, 2.0)),
             radius,
         }
     }
