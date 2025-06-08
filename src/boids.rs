@@ -5,11 +5,11 @@ pub struct Boids {
 }
 
 impl Boids {
-    pub fn new(n: i32) -> Self {
+    pub fn new(n: i32, radius: f32) -> Self {
         let mut boids: Vec<Boid> = Vec::new();
 
         for _ in 0..n {
-            boids.push(Boid::new());
+            boids.push(Boid::new(radius));
         }
 
         Boids { boids }

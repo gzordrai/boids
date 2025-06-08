@@ -20,7 +20,7 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    let mut boids = Boids::new(10);
+    let mut boids = Boids::new(10, 6.0);
 
     loop {
         clear_background(BLACK);
