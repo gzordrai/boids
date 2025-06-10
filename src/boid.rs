@@ -2,16 +2,6 @@ use macroquad::{color::RED, math::Vec2, rand::gen_range, shapes::draw_circle};
 
 use crate::CONFIG;
 
-const MAX_SPEED: f32 = 5.0;
-const MAX_FORCE: f32 = 0.05;
-
-const NEIGHBORHOOD_RADIUS: f32 = 60.0;
-const SEPARATION_RADIUS: f32 = 20.0;
-
-const SEPARATION_STRENGTH: f32 = 3.0;
-const ALIGNMENT_STRENGTH: f32 = 1.8;
-const COHESION_STRENGTH: f32 = 1.0;
-
 #[derive(Clone)]
 pub struct Boid {
     position: Vec2,
@@ -22,8 +12,8 @@ pub struct Boid {
 
 impl Boid {
     pub fn new(radius: f32) -> Self {
-        let width = CONFIG.window_width as f32;
-        let height = CONFIG.window_height as f32;
+        let width = CONFIG.window.window_width as f32;
+        let height = CONFIG.window.window_height as f32;
 
         Boid {
             position: Vec2::new(
@@ -41,20 +31,20 @@ impl Boid {
     }
 
     pub fn update(&mut self, boids: &Vec<Boid>) {
-        let separation = self.calculate_separation_force(boids) * SEPARATION_STRENGTH;
-        let alignment = self.calculate_alignment_force(boids) * ALIGNMENT_STRENGTH;
-        let cohesion = self.calculate_cohesion_force(boids) * COHESION_STRENGTH;
+        let separation = self.calculate_separation_force(boids) * CONFIG.boids.separation_strength;
+        let alignment = self.calculate_alignment_force(boids) * CONFIG.boids.alignment_strength;
+        let cohesion = self.calculate_cohesion_force(boids) * CONFIG.boids.cohesion_strength;
         let mut steering = separation + alignment + cohesion;
 
-        if steering.length() > MAX_FORCE {
-            steering = steering.normalize() * MAX_FORCE;
+        if steering.length() > CONFIG.boids.max_force {
+            steering = steering.normalize() * CONFIG.boids.max_force;
         }
 
         self.acceleration += steering;
         self.velocity = self.velocity.lerp(self.velocity + self.acceleration, 0.2);
 
-        if self.velocity.length() > MAX_SPEED {
-            self.velocity = self.velocity.normalize() * MAX_SPEED;
+        if self.velocity.length() > CONFIG.boids.max_speed {
+            self.velocity = self.velocity.normalize() * CONFIG.boids.max_speed;
         }
 
         self.update_position_with_bounds();
@@ -62,8 +52,8 @@ impl Boid {
     }
 
     fn update_position_with_bounds(&mut self) {
-        let height = CONFIG.window_height as f32;
-        let width = CONFIG.window_width as f32;
+        let height = CONFIG.window.window_height as f32;
+        let width = CONFIG.window.window_width as f32;
         let position = self.position + self.velocity;
 
         // Left and right walls
@@ -89,7 +79,7 @@ impl Boid {
             let diff = self.position - boid.position;
             let distance = diff.length();
 
-            if distance > 0.0 && distance < SEPARATION_RADIUS {
+            if distance > 0.0 && distance < CONFIG.boids.separation_radius {
                 steer += diff.normalize() / distance;
                 count += 1;
             }
@@ -113,7 +103,7 @@ impl Boid {
         for boid in boids {
             let distance = (self.position - boid.position).length();
 
-            if distance > 0.0 && distance < NEIGHBORHOOD_RADIUS {
+            if distance > 0.0 && distance < CONFIG.boids.neighborhood_radius {
                 avg_velocity += boid.velocity;
                 count += 1;
             }
@@ -140,7 +130,7 @@ impl Boid {
         for boid in boids {
             let distance = (self.position - boid.position).length();
 
-            if distance > 0.0 && distance < NEIGHBORHOOD_RADIUS {
+            if distance > 0.0 && distance < CONFIG.boids.neighborhood_radius {
                 center_of_mass += boid.position;
                 count += 1;
             }
