@@ -1,4 +1,10 @@
-use macroquad::{color::RED, math::Vec2, rand::gen_range, shapes::draw_circle};
+use std::f32::consts::PI;
+use macroquad::{
+    color::{GRAY, RED},
+    math::Vec2,
+    rand::gen_range,
+    shapes::{draw_circle_lines, draw_triangle},
+};
 
 use crate::CONFIG;
 
@@ -27,7 +33,24 @@ impl Boid {
     }
 
     pub fn draw(&self) {
-        draw_circle(self.position.x, self.position.y, self.radius, RED);
+        let angle = self.velocity.y.atan2(self.velocity.x);
+        let tip = self.position + Vec2::new(angle.cos(), angle.sin()) * self.radius * 2.0;
+        let left = self.position
+            + Vec2::new((angle + PI * 0.75).cos(), (angle + PI * 0.75).sin()) * self.radius;
+        let right = self.position
+            + Vec2::new((angle - PI * 0.75).cos(), (angle - PI * 0.75).sin()) * self.radius;
+
+        draw_triangle(tip, left, right, RED);
+
+        if CONFIG.boids.debug {
+            draw_circle_lines(
+                self.position.x,
+                self.position.y,
+                CONFIG.boids.separation_radius,
+                1.0,
+                GRAY,
+            );
+        }
     }
 
     pub fn update(&mut self, boids: &Vec<Boid>) {
